@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Index Dashboard — CHRO Strategic Review</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, 'Noto Sans TC', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+    min-height: 100vh;
+    padding: 40px 24px;
+    color: #2d3748;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a202c;
+    letter-spacing: 0.5px;
+  }
+  .header .subtitle {
+    font-size: 14px;
+    color: #718096;
+    margin-top: 6px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .card-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .card-title-group {
+    flex: 1;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a202c;
+    line-height: 1.3;
+  }
+  .card-title-en {
+    font-size: 12px;
+    font-weight: 500;
+    color: #a0aec0;
+    margin-top: 1px;
+  }
+
+  .card-body {
+    padding: 0 20px 18px;
+  }
+
+  .section {
+    margin-bottom: 12px;
+  }
+  .section:last-child { margin-bottom: 0; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .section-label .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .section-text {
+    font-size: 13px;
+    line-height: 1.65;
+    color: #4a5568;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Color themes per card */
+  .theme-blue    .card-header { background: linear-gradient(135deg, #ebf4ff 0%, #e0edff 100%); }
+  .theme-blue    .card-icon   { background: #3182ce; color: #fff; }
+  .theme-blue    .section-label { color: #2b6cb0; }
+  .theme-blue    .dot         { background: #3182ce; }
+  .theme-blue    .tag         { background: #ebf8ff; color: #2c5282; }
+
+  .theme-green   .card-header { background: linear-gradient(135deg, #f0fff4 0%, #e2f9e8 100%); }
+  .theme-green   .card-icon   { background: #38a169; color: #fff; }
+  .theme-green   .section-label { color: #276749; }
+  .theme-green   .dot         { background: #38a169; }
+  .theme-green   .tag         { background: #f0fff4; color: #276749; }
+
+  .theme-purple  .card-header { background: linear-gradient(135deg, #faf5ff 0%, #f0e6ff 100%); }
+  .theme-purple  .card-icon   { background: #805ad5; color: #fff; }
+  .theme-purple  .section-label { color: #6b46c1; }
+  .theme-purple  .dot         { background: #805ad5; }
+  .theme-purple  .tag         { background: #faf5ff; color: #553c9a; }
+
+  .theme-orange  .card-header { background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%); }
+  .theme-orange  .card-icon   { background: #dd6b20; color: #fff; }
+  .theme-orange  .section-label { color: #c05621; }
+  .theme-orange  .dot         { background: #dd6b20; }
+  .theme-orange  .tag         { background: #fffaf0; color: #9c4221; }
+
+  .theme-red     .card-header { background: linear-gradient(135deg, #fff5f5 0%, #fee2e2 100%); }
+  .theme-red     .card-icon   { background: #e53e3e; color: #fff; }
+  .theme-red     .section-label { color: #c53030; }
+  .theme-red     .dot         { background: #e53e3e; }
+  .theme-red     .tag         { background: #fff5f5; color: #9b2c2c; }
+
+  .theme-teal    .card-header { background: linear-gradient(135deg, #e6fffa 0%, #ccfbf1 100%); }
+  .theme-teal    .card-icon   { background: #319795; color: #fff; }
+  .theme-teal    .section-label { color: #285e61; }
+  .theme-teal    .dot         { background: #319795; }
+  .theme-teal    .tag         { background: #e6fffa; color: #285e61; }
+
+  .theme-pink    .card-header { background: linear-gradient(135deg, #fff5f7 0%, #ffe4eb 100%); }
+  .theme-pink    .card-icon   { background: #d53f8c; color: #fff; }
+  .theme-pink    .section-label { color: #b83280; }
+  .theme-pink    .dot         { background: #d53f8c; }
+  .theme-pink    .tag         { background: #fff5f7; color: #97266d; }
+
+  .theme-indigo  .card-header { background: linear-gradient(135deg, #ebf4ff 0%, #e0e7ff 100%); }
+  .theme-indigo  .card-icon   { background: #5a67d8; color: #fff; }
+  .theme-indigo  .section-label { color: #4c51bf; }
+  .theme-indigo  .dot         { background: #5a67d8; }
+  .theme-indigo  .tag         { background: #ebf4ff; color: #434190; }
+
+  .theme-yellow  .card-header { background: linear-gradient(135deg, #fffff0 0%, #fefcbf 100%); }
+  .theme-yellow  .card-icon   { background: #d69e2e; color: #fff; }
+  .theme-yellow  .section-label { color: #b7791f; }
+  .theme-yellow  .dot         { background: #d69e2e; }
+  .theme-yellow  .tag         { background: #fffff0; color: #975a16; }
+
+  .theme-cyan    .card-header { background: linear-gradient(135deg, #edfdfd 0%, #c4f1f9 100%); }
+  .theme-cyan    .card-icon   { background: #0987a0; color: #fff; }
+  .theme-cyan    .section-label { color: #086f83; }
+  .theme-cyan    .dot         { background: #0987a0; }
+  .theme-cyan    .tag         { background: #edfdfd; color: #065666; }
+
+  .actions-list {
+    font-size: 13px;
+    color: #4a5568;
+    line-height: 1.7;
+    padding-left: 4px;
+  }
+  .actions-list .step {
+    display: flex;
+    gap: 6px;
+  }
+  .step-num {
+    font-weight: 700;
+    color: inherit;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 36px;
+    font-size: 12px;
+    color: #a0aec0;
+  }
+
+  @media (max-width: 860px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    body { background: #fff; padding: 12px; }
+    .card { break-inside: avoid; box-shadow: 0 0 0 1px #e2e8f0; }
+    .card:hover { transform: none; box-shadow: 0 0 0 1px #e2e8f0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>HR Index Dashboard</h1>
+    <div class="subtitle">CHRO Strategic Review — 10 Key People Metrics</div>
+  </div>
+
+  <div class="card-grid">
+
+    <!-- 1. Time to Fill -->
+    <div class="card theme-blue">
+      <div class="card-header">
+        <div class="card-icon">&#9201;</div>
+        <div class="card-title-group">
+          <div class="card-title">關鍵職缺裝填時間</div>
+          <div class="card-title-en">Time to Fill — Critical</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">關鍵職裝填不快，瓶頸在招募流程中的哪一段？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">專案/交付延誤</span>
+            <span class="tag">營收節點延後</span>
+            <span class="tag">團隊過輪</span>
+            <span class="tag">選標準錯誤人</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>拆解 SLA（JD→shortlist→面試→offer→到職），給定承諾時間找瓶頸</span></div>
+            <div class="step"><span class="step-num">2.</span><span>建關鍵職人才庫/內推專案，每週看招募漏斗</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Quality of Hire -->
+    <div class="card theme-green">
+      <div class="card-header">
+        <div class="card-icon">&#9733;</div>
+        <div class="card-title-group">
+          <div class="card-title">招聘品質</div>
+          <div class="card-title-en">Quality of Hire</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">招進來的人 6—12 個月能產出並留下來嗎？哪些來源/職系不穩？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">試用期/半年內流失</span>
+            <span class="tag">績效不達</span>
+            <span class="tag">二次裝填成本</span>
+            <span class="tag">團隊疲累</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>校準 JD＋面試標準</span></div>
+            <div class="step"><span class="step-num">2.</span><span>低 QoH 來源/主管回饋矯正（搜放、面試、核簽）</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Critical Skill Coverage -->
+    <div class="card theme-purple">
+      <div class="card-header">
+        <div class="card-icon">&#9881;</div>
+        <div class="card-title-group">
+          <div class="card-title">關鍵技能覆蓋率</div>
+          <div class="card-title-en">Critical Skill Coverage</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">能力需要的技能庫存夠嗎？缺口在哪些 BU/專案？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">能量出不出來/品質差</span>
+            <span class="tag">過度依賴少數人</span>
+            <span class="tag">流失風險</span>
+            <span class="tag">外包成本上升</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>skill staffing 保關鍵專案</span></div>
+            <div class="step"><span class="step-num">2.</span><span>缺口程度排序（內能培訓、選軍裝齊），設季度目標</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Internal Fill / Mobility -->
+    <div class="card theme-teal">
+      <div class="card-header">
+        <div class="card-icon">&#8644;</div>
+        <div class="card-title-group">
+          <div class="card-title">內部裝填/流動率</div>
+          <div class="card-title-en">Internal Fill / Mobility</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">能否用內部人才快速填張與遞補？職涯市場是否活絡？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">裝填變慢</span>
+            <span class="tag">外招成本高</span>
+            <span class="tag">人才看不到路徑而流失</span>
+            <span class="tag">能力角色卡位梗</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>internal-first window，開放職缺</span></div>
+            <div class="step"><span class="step-num">2.</span><span>數位職務機接軌職（訓練、導師）</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Regrettable Turnover -->
+    <div class="card theme-red">
+      <div class="card-header">
+        <div class="card-icon">&#9888;</div>
+        <div class="card-title-group">
+          <div class="card-title">可惜流失率</div>
+          <div class="card-title-en">Regrettable Turnover</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">關鍵/高績效人才流失集中在哪？主因是主管/報酬/負荷/職涯？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">關鍵知識流失</span>
+            <span class="tag">專案倒滯</span>
+            <span class="tag">替裝錢時長又貴</span>
+            <span class="tag">技術/客戶斷層</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>直覺回饋 stay interview（留任方案：任務/職涯/報酬校正）</span></div>
+            <div class="step"><span class="step-num">2.</span><span>同步處理負荷（加班/缺休）與專案風險</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Succession Coverage -->
+    <div class="card theme-indigo">
+      <div class="card-header">
+        <div class="card-icon">&#9650;</div>
+        <div class="card-title-group">
+          <div class="card-title">接班覆蓋率</div>
+          <div class="card-title-en">Succession Coverage</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">關鍵職若空缺怎辦？成長擴張有無斷層？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">關鍵職空窗</span>
+            <span class="tag">營運/研發/製造失速</span>
+            <span class="tag">被迫外招品質/時效風險</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>指定候選（發展計畫：輪調/關鍵任務）</span></div>
+            <div class="step"><span class="step-num">2.</span><span>同步外部市場 mapping 經常更新</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Absenteeism / Burnout Risk -->
+    <div class="card theme-orange">
+      <div class="card-header">
+        <div class="card-icon">&#9729;</div>
+        <div class="card-title-group">
+          <div class="card-title">組織健康早期指標</div>
+          <div class="card-title-en">Absenteeism / Burnout Risk</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">哪些單位過輪/失衡？會不會引發流失、事故、品質問題？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">缺勤上升</span>
+            <span class="tag">職災/工安風險</span>
+            <span class="tag">品質下滑</span>
+            <span class="tag">離職潮（製造尤甚）</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>立即做負荷調整（排班/加班上限/支援）</span></div>
+            <div class="step"><span class="step-num">2.</span><span>對高風險團隊做 30—60 天遊面行動</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Manager Effectiveness -->
+    <div class="card theme-pink">
+      <div class="card-header">
+        <div class="card-icon">&#9734;</div>
+        <div class="card-title-group">
+          <div class="card-title">管理者效能</div>
+          <div class="card-title-en">Manager Effectiveness</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">哪些主管在帶人/協作/變革上成效或疲累？需要介入嗎？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">團隊流失</span>
+            <span class="tag">低敬業率</span>
+            <span class="tag">績效不穩</span>
+            <span class="tag">跨部門阻塞</span>
+            <span class="tag">能力推不動</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>直屬主管教練（局管：1:1/回饋/授權）</span></div>
+            <div class="step"><span class="step-num">2.</span><span>必要時人事調整/重配關鍵人才</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. Labor Cost -->
+    <div class="card theme-yellow">
+      <div class="card-header">
+        <div class="card-icon">&#36;</div>
+        <div class="card-title-group">
+          <div class="card-title">人力成本效率</div>
+          <div class="card-title-en">Labor Cost % Rev / per FTE</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">擴張時人力成本有失控嗎？預算花在對的能力與單位嗎？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">獲利被侵蝕</span>
+            <span class="tag">成本僵固化</span>
+            <span class="tag">錯誤縮編衝擊成長與能力建設</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>拆成本結構（外包/加班/職級）調整用工組合</span></div>
+            <div class="step"><span class="step-num">2.</span><span>挪資源到關鍵技能與高回報單位</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. Revenue per FTE -->
+    <div class="card theme-cyan">
+      <div class="card-header">
+        <div class="card-icon">&#9650;</div>
+        <div class="card-title-group">
+          <div class="card-title">人均產出</div>
+          <div class="card-title-en">Revenue / GP per FTE</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>CHRO 問題</div>
+          <div class="section-text">招聘是否每增加人頭是每人均產出/效率在成長？哪裡該優先數位化？</div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>風險與損失</div>
+          <div class="tag-row">
+            <span class="tag">編制增但產出不增</span>
+            <span class="tag">專案加人低產出下降</span>
+            <span class="tag">長期競爭力/資本效率下降</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label"><span class="dot"></span>改善作法</div>
+          <div class="actions-list">
+            <div class="step"><span class="step-num">1.</span><span>找低產出瓶頸（流程/系統/協作）並推數位化</span></div>
+            <div class="step"><span class="step-num">2.</span><span>調配人力到高成長/高毛利專案</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">HR Index Dashboard &middot; CHRO Strategic Review</div>
+</div>
+
+</body>
+</html>
